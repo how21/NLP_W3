@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Guessing Game</title>
+</head>
+<body>
+    <h1>Word Guessing Game</h1>
+    <p>Hint (Regex Pattern): <span id="hint">{{ hint }}</span></p>
+    <p id="word_masked">{{ word_masked }}</p>
+    <p>Lives: <span id="lives">{{ lives }}</span></p>
+    <p>Points: <span id="points">{{ points }}</span></p>
+    <p id="message"></p>
+
+    <form id="guess-form">
+        <input type="text" id="pattern" name="pattern" placeholder="Enter regex pattern" required>
+        <button type="submit">Guess</button>
+    </form>
+
+    <button id="restart-button" style="display:none;">Restart Game</button>
+
+    <script>
+        document.getElementById('guess-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const pattern = document.getElementById('pattern').value;
+            
+            fetch('/guess', {
+                method: 'POST',
+                body: new URLSearchParams({'pattern': pattern}),
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('message').textContent = data.message;
+                document.getElementById('lives').textContent = data.lives;
+                document.getElementById('points').textContent = data.points;
+                document.getElementById('hint').textContent = data.hint;
+
+                if (data.word_masked) {
+                    document.getElementById('word_masked').textContent = data.word_masked;
+                }
+                
+                if (data.game_over) {
+                    document.getElementById('restart-button').style.display = 'inline';
+                    document.getElementById('message').textContent += ` The correct word was "${data.correct_word}".`;
+                }
+            });
+        });
+
+        document.getElementById('restart-button').addEventListener('click', function() {
+            fetch('/restart', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'}
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('word_masked').textContent = data.word_masked;
+                document.getElementById('lives').textContent = data.lives;
+                document.getElementById('points').textContent = data.points;
+                document.getElementById('hint').textContent = data.hint;
+                document.getElementById('message').textContent = '';
+                document.getElementById('restart-button').style.display = 'none';
+            });
+        });
+    </script>
+</body>
+</html>
