@@ -1,30 +1,79 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="darkmode" lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Word Guessing Game</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body>
-    <h1>Word Guessing Game</h1>
-    <p>Hint (Regex Pattern): <span id="hint">{{ hint }}</span></p>
-    <p id="word_masked">{{ word_masked }}</p>
-    <p>Lives: <span id="lives">{{ lives }}</span></p>
-    <p>Points: <span id="points">{{ points }}</span></p>
-    <p id="message"></p>
-
-    <form id="guess-form">
-        <input type="text" id="pattern" name="pattern" placeholder="Enter regex pattern" required>
-        <button type="submit">Guess</button>
-    </form>
-
-    <button id="restart-button" style="display:none;">Restart Game</button>
-
+    <div class="relative h-screen overflow-hidden bg-indigo-900">
+        <img src="https://images.unsplash.com/photo-1637087383682-40f325297582?q=80&w=2003&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" class="absolute object-cover w-full h-full"/>
+        <div class="absolute inset-0 bg-black opacity-25"></div>
+        <header class="absolute top-0 left-0 right-0 z-20">
+            <nav class="container px-6 py-4 mx-auto md:px-12">
+                <div class="items-center justify-between md:flex">
+                    <div class="flex items-center justify-between">
+                        <a href="{{ url_for('login') }}" class="text-white">
+                            <svg class="w-8 mr-2 fill-current" xmlns="http://www.w3.org/2000/svg" data-name="Capa 1" viewBox="0 0 16.16 12.57">
+                                <defs></defs>
+                                <path d="M14.02 4.77v7.8H9.33V8.8h-2.5v3.77H2.14v-7.8h11.88z"></path>
+                                <path d="M16.16 5.82H0L8.08 0l8.08 5.82z"></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <div class="container relative z-10 flex items-center justify-center h-screen mx-auto">
+            <div class="top-28 text-center"> 
+                <h1 class="text-5xl font-bold text-white mb-2">Belajar Regrek Dengan</h1>
+                <br>
+                <h1 class="text-5xl font-bold text-white mb-4">Tebak Kata</h1>
+            </div>
+        
+            <!-- kotak game -->
+            <div class="flex items-center justify-center lg:w-3/5 xl:w-2/5">
+                <div class="max-w-md w-full bg-gray-200 shadow-md rounded-lg p-8">
+                    <div class="mb-4 text-center">
+                        <p class="text-2xl font-semibold text-gray-700 ">Hint (Regex Pattern) 
+                    </div>
+                    
+                    <div class="mb-4 text-center">
+                        <span id="hint" class="text-2xl font-semibold text-indigo-400">{{ hint }}</span></p>
+                    </div>
+                    <div>
+                        <p id="word_masked" class="text-2xl font-mono text-gray-200">{{ word_masked }}</p>
+                    </div>
+                    
+                    <div class="flex justify-between mb-4">
+                        <p>Lives: <span id="lives" class="font-semibold text-red-800">{{ lives }}</span></p>
+                        <p>Points: <span id="points" class="font-semibold text-green-800">{{ points }}</span></p>
+                    </div>
+                    
+                    <p id="message" class="text-sm text-gray-600 mb-4"></p>
+                    
+                    <form id="guess-form" class="flex flex-col space-y-4">
+                        <input type="text" id="pattern" name="pattern" placeholder="Hayoo apa" required
+                            class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <button type="submit" class="w-full bg-indigo-600 text-white py-2 rounded-md hover:bg-indigo-900 transition">Jawab</button>
+                    </form>
+                    
+                    <button id="restart-button" style="display:none;" class="w-full mt-4 bg-gray-600 text-white py-2 rounded-md hover:bg-gray-700 transition">
+                        Coba Lagi
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        
+    </div>
+    
     <script>
         document.getElementById('guess-form').addEventListener('submit', function(event) {
             event.preventDefault();
             const pattern = document.getElementById('pattern').value;
-            
+
             fetch('/guess', {
                 method: 'POST',
                 body: new URLSearchParams({'pattern': pattern}),
@@ -40,10 +89,10 @@
                 if (data.word_masked) {
                     document.getElementById('word_masked').textContent = data.word_masked;
                 }
-                
+
                 if (data.game_over) {
                     document.getElementById('restart-button').style.display = 'inline';
-                    document.getElementById('message').textContent += ` The correct word was "${data.correct_word}".`;
+                    document.getElementById('message').textContent += ` Jawaban yang bener itu "${data.correct_word}".`;
                 }
             });
         });
